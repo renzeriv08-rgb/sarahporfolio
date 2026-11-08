@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#30253b">
+    <meta name="description" content="Explore Sarah's interactive 3D portfolio: a walkable cherry-blossom island filled with projects, stories, and small moments of magic.">
+    <title>Sarah's Little World</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import("three")
+        .then(() => import("./game.js"))
+        .catch((error) => {
+          console.error("Could not load the 3D portfolio world.", error);
+          document.querySelector("#load-error").hidden = false;
+        });
+    </script>
+  </head>
+  <body>
+    <main class="game-shell">
+      <canvas id="world" aria-label="Interactive 3D cherry blossom portfolio world"></canvas>
+      <div class="vignette" aria-hidden="true"></div>
+      <div class="sakura-frame" aria-hidden="true">
+        <span class="sakura-frame-corner top-left">✿</span>
+        <span class="sakura-frame-corner top-right">❀</span>
+        <span class="sakura-frame-corner bottom-left">❀</span>
+        <span class="sakura-frame-corner bottom-right">✿</span>
+        <span class="sakura-frame-blossom top">✿</span>
+        <span class="sakura-frame-blossom bottom">✿</span>
+      </div>
+
+      <header class="topbar">
+        <a class="wordmark" href="#" aria-label="Return to the garden">
+          <span class="wordmark-icon" aria-hidden="true">✿</span>
+          <span>Sarah's <span class="wordmark-light">little world</span></span>
+        </a>
+        <div class="topbar-right">
+          <span class="chapter"><span class="status-dot"></span> A world made with love</span>
+          <button class="header-button sky-toggle" id="sky-toggle" type="button" aria-label="Change day and night cycle" title="Cycle automatic, night, and day">☀ Day</button>
+          <button class="header-button pov-toggle" id="pov-toggle" type="button" aria-pressed="false" aria-label="Switch to first-person view" title="Switch to first-person view (V)">POV · 3rd</button>
+          <button class="header-button hud-toggle" id="hud-toggle" type="button" aria-pressed="false" aria-label="Hide interface labels (H)" title="Toggle interface labels (H)">Hide UI <kbd>H</kbd></button>
+          <button class="header-button" id="map-toggle" type="button" aria-pressed="false" aria-controls="world-map">Map <kbd>M</kbd></button>
+          <button class="header-button quality-button" id="quality-toggle" type="button" title="Cycle graphics quality">Quality <span>Auto</span></button>
+          <button class="header-button snapshot-button" id="photo-button" type="button" title="Download a picture of the garden">Photo <span aria-hidden="true">↗</span></button>
+          <button class="header-button music-toggle" id="sound-toggle" type="button" aria-label="Turn cozy music on" aria-pressed="true" title="Toggle original day, night, and sky-event music">♫ Music off</button>
+        </div>
+      </header>
+
+      <section class="intro-card" id="intro-card">
+        <span class="eyebrow">WELCOME TO MY WORLD</span>
+        <h1>A little world<br>of <span>big ideas.</span></h1>
+        <p>Wander through the blossoms and discover a little more about me at every stop.</p>
+        <button class="primary-button" id="start-button" type="button">Let's explore <span aria-hidden="true">↗</span></button>
+        <div class="intro-hint"><span class="sparkle">✧</span> Find the 12 glowing memory petals</div>
+      </section>
+
+      <nav class="world-nav" aria-label="Portfolio sections">
+        <span class="nav-caption">JUMP TO</span>
+        <button type="button" data-section="about"><span>01</span> About</button>
+        <button type="button" data-section="skills"><span>02</span> Skills</button>
+        <button type="button" data-section="projects"><span>03</span> Projects</button>
+        <button type="button" data-section="journey"><span>04</span> Journey</button>
+        <button type="button" data-section="socials"><span>05</span> Socials</button>
+        <button type="button" data-section="contact"><span>06</span> Contact</button>
+      </nav>
+
+      <div class="location-tag"><span class="location-icon" aria-hidden="true">⌖</span><span id="location-name">Cherry blossom island</span></div>
+      <div class="nearby-prompt" id="nearby-prompt" aria-live="polite"><kbd>E</kbd><span>Explore this spot</span></div>
+      <div class="collectible-counter" id="collectible-counter" aria-live="polite"><span aria-hidden="true">✦</span><span>Memory petals</span><strong id="petal-count">0 / 12</strong></div>
+      <canvas class="world-map" id="world-map" width="220" height="220" aria-label="Map of the island"></canvas>
+
+      <aside class="controls-card" aria-label="Game controls">
+        <div class="controls-heading">HOW TO EXPLORE <span aria-hidden="true">✧</span></div>
+        <div class="control-row"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>to wander</span></div>
+        <div class="control-row"><kbd>Shift</kbd><span>sprint · <kbd>Space</kbd> jump</span></div>
+        <div class="control-row"><kbd>E</kbd><span>open a nearby spot</span></div>
+        <div class="control-row"><kbd>V</kbd><span>toggle first-person view</span></div>
+        <div class="control-row"><kbd>H</kbd><span>hide or show interface</span></div>
+        <div class="control-row"><kbd>N</kbd><span>cycle day & night</span></div>
+        <div class="control-row"><span class="mouse-icon" aria-hidden="true">↔</span><span>move cursor (1st person) · drag (3rd)</span></div>
+        <div class="controls-foot">Collect 12 glowing petals ✧</div>
+      </aside>
+
+      <div class="mobile-controls" aria-label="Touch controls">
+        <button class="touch-key touch-up" data-direction="up" type="button" aria-label="Move forward">↑</button>
+        <button class="touch-key touch-left" data-direction="left" type="button" aria-label="Move left">←</button>
+        <button class="touch-key touch-down" data-direction="down" type="button" aria-label="Move backward">↓</button>
+        <button class="touch-key touch-right" data-direction="right" type="button" aria-label="Move right">→</button>
+        <button class="touch-action" id="touch-action" type="button" aria-label="Explore nearby spot">E</button>
+        <button class="touch-jump" id="touch-jump" type="button" aria-label="Jump">↑</button>
+      </div>
+
+      <section class="info-panel" id="info-panel" role="dialog" aria-modal="true" aria-labelledby="panel-title" hidden>
+        <button class="close-button" id="close-panel" type="button" aria-label="Close panel">×</button>
+        <div class="panel-topline"><span class="panel-flower" aria-hidden="true">✿</span><span id="panel-kicker">A LITTLE INTRODUCTION</span></div>
+        <h2 id="panel-title"></h2>
+        <div class="panel-content" id="panel-content"></div>
+      </section>
+
+      <section class="wish-panel" id="wish-panel" role="dialog" aria-modal="true" aria-labelledby="wish-title" hidden>
+        <button class="close-button" id="wish-close" type="button" aria-label="Close wish fountain">×</button>
+        <div class="panel-topline"><span class="panel-flower" aria-hidden="true">✧</span><span>A LITTLE MOMENT OF MAGIC</span></div>
+        <h2 id="wish-title">Make a wish ♡</h2>
+        <p class="wish-intro">Whisper a hope into the fountain. Watch it sparkle its way up to the blossoms.</p>
+        <form class="wish-form" id="wish-form">
+          <label class="sr-only" for="wish-input">Write a wish</label>
+          <textarea id="wish-input" name="wish" maxlength="160" rows="3" placeholder="I wish for..." required></textarea>
+          <div class="wish-form-footer"><span>Keep it kind and hopeful ✿</span><span id="wish-character-count">0 / 160</span></div>
+          <button class="primary-button" type="submit">Send it to the stars <span aria-hidden="true">✧</span></button>
+        </form>
+        <div class="wish-recent" aria-live="polite">
+          <h3>Little wishes from this visit</h3>
+          <ul id="wish-list"><li class="wish-empty">Your wishes will bloom here.</li></ul>
+        </div>
+      </section>
+
+      <section class="animal-panel" id="animal-panel" role="dialog" aria-modal="true" aria-labelledby="animal-title" hidden>
+        <button class="close-button" id="animal-close" type="button" aria-label="Close animal conversation">×</button>
+        <div class="animal-portrait" id="animal-portrait" aria-hidden="true">🐸</div>
+        <span class="eyebrow">A LITTLE FRIEND SAYS HELLO</span>
+        <h2 id="animal-title">Mochi</h2>
+        <div class="animal-hearts" id="animal-hearts" aria-label="Friendship"></div>
+        <div class="animal-line-kind" id="animal-line-kind">A little hello</div>
+        <div class="animal-chat-log" id="animal-chat-log" role="log" aria-live="polite" aria-relevant="additions">
+          <p class="animal-dialogue" id="animal-dialogue"></p>
+        </div>
+        <form class="animal-chat-form" id="animal-chat-form">
+          <label class="sr-only" for="animal-message">Write a message to this animal</label>
+          <input id="animal-message" name="message" type="text" maxlength="240" autocomplete="off" placeholder="Say something kind..." required>
+          <button class="primary-button animal-send" type="submit" aria-label="Send message">Send <span aria-hidden="true">♡</span></button>
+        </form>
+        <div class="animal-actions">
+          <button class="primary-button" id="animal-talk" type="button">Talk ♡</button>
+          <button class="header-button" id="animal-pet" type="button">Give a gentle pet ✿</button>
+        </div>
+        <div class="animal-status" id="animal-status"></div>
+      </section>
+
+      <div class="webgl-error" id="load-error" role="alert" hidden>
+        <strong>Your garden is almost ready.</strong><br>
+        Run this page through a local web server (for example, VS Code Live Server) and make sure your browser can load the Three.js CDN to explore the 3D world.
+      </div>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <footer class="footer-note">Take your time. <span aria-hidden="true">✿</span></footer>
+    </main>
+  </body>
+</html>
